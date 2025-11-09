@@ -51,7 +51,7 @@ export default function MyScatterplot() {
 
             <main className="container">
                 <div className="row pt-2">
-                    <div className="col-2 pe-2 text-end"><strong className="fs-6">X:</strong></div>
+                    <div className="col-1 pe-2 text-end"><strong className="fs-6">X:</strong></div>
                     <div className="col-8" onChange={handleXChange}>
                         {encodingOptions.map(option => (
                             <div key={`x-${option}`} className="form-check form-check-inline fs-6">
@@ -69,10 +69,10 @@ export default function MyScatterplot() {
                         ))}
                     </div>
                 </div>
-
+                        
                 {/* Y-Encoding Radios */}
                 <div className="row">
-                    <div className="col-2 text-end pe-2"><strong className = "fs-6">Y:</strong></div>
+                    <div className="col-1 text-end pe-2"><strong className = "fs-6">Y:</strong></div>
                     <div className="col-8" onChange={handleYChange}>
                         {encodingOptions.map(option => (
                             <div key={`y-${option}`} className="form-check form-check-inline fs-6">
@@ -90,7 +90,7 @@ export default function MyScatterplot() {
                         ))}
                     </div>
                 </div>
-
+                <br></br>
                 <div className="row">
                     <div className="col-3 fs-6">
                         <div className="form-check form-switch">
@@ -105,16 +105,14 @@ export default function MyScatterplot() {
                             <label className="form-check-label" htmlFor="use-color">Color-encode Class</label>
                         </div>
                     </div>
-                </div>
-
-                <div id="buttons-wrapper" className="text-end">
-                    <button id="update" className="btn btn-primary me-2" onClick={handleUpdate}>
-                        Update
-                    </button>
+                    <div id="buttons-wrapper" className="text-end">
                     <button id="reset" className="btn btn-secondary me-2" onClick={handleReset}>
                         Reset
                     </button>
+                    </div>
                 </div>
+
+
 
                 <Test count={clickCount} chosenXVar={xVar} chosenYVar={yVar} colorUse={useColor}/>
             </main>

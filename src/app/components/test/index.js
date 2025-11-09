@@ -1,12 +1,30 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import Scatterplot from "./Scatterplot";
+import Histogram from "./Histogram";
+import DataTable from "./DataTable";
 
-let width = 400, height = 400;
-let margin = {top: 10, right: 10, bottom: 40, left: 40}
 let data = d3.csv("https://gist.githubusercontent.com/netj/8836201/raw/6f9306ad21398ea43cba4f7d537619d0e07d5ae3/iris.csv");
+let scatterplot;
+let histogram;
+let brushedData;
+let dataTable;
+let csv;
+
+function updateHistogram() {
+  histogram.update(brushedData && brushedData.length > 0 ?
+    brushedData : csv, "variety"
+  );
+}
+
+function updateDataTable() {
+  dataTable.update(brushedData && brushedData.length > 0 ?
+  brushedData : data, data.columns)
+}
 
 export default function Test({count, chosenXVar, chosenYVar, colorUse}) {
   const svgRef = useRef(null);
+  const svgRef2 = useRef(null);
 
   useEffect(() => {
     data.then(csvData => {
@@ -16,16 +34,13 @@ export default function Test({count, chosenXVar, chosenYVar, colorUse}) {
             d["sepal.length"] = +d["sepal.length"];
             d["sepal.width"] = +d["sepal.width"];
         });
-        let csv = csvData;
+        csv = csvData;
         const svg = d3.select(svgRef.current); // selection 객체
-        svg.selectAll("*").remove()
-        let container = svg.append("g");
-        let gXAxis = svg.append("g");
-        let gYAxis = svg.append("g");
+        scatterplot = new Scatterplot(svg, csv);
 
-        svg
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom);
+        svg.selectAll("*").remove()
+        
+        scatterplot.initialize()
 
         let xVar; let yVar;
         if (chosenXVar === "SepalLength") xVar = "sepal.length";
@@ -36,39 +51,31 @@ export default function Test({count, chosenXVar, chosenYVar, colorUse}) {
         if (chosenYVar === "PetalLength") yVar = "petal.length";
         if (chosenYVar === "SepalWidth") yVar = "sepal.width";
         if (chosenYVar === "PetalWidth") yVar = "petal.width";
-        
-        let xScale = d3.scaleLinear().domain(d3.extent(csv, d => d[xVar])
-        ).range([0, width]);
-        let yScale = d3.scaleLinear().domain(d3.extent(csv, d => d[yVar])
-        ).range([height, 0]);
-        let zScale = d3.scaleOrdinal().domain(["Setosa", "Versicolor", "Virginica"]).range(d3.schemeCategory10)
-        
 
-        container.attr("transform", `translate(${margin.left}, ${margin.top})`)
-        gXAxis
-            .attr("transform", `translate(${margin.left}, ${margin.top + height})`)
-            .transition()
-            .call(d3.axisBottom(xScale))
-        gYAxis
-            .attr("transform", `translate(${margin.left}, ${margin.top})`)
-            .transition()
-            .call(d3.axisLeft(yScale))
+        scatterplot.update(xVar, yVar, "variety", colorUse);
+        scatterplot.on("brush", (brushedItems) => {
+          brushedData = brushedItems;
+          let svg3 = d3.select(svgRef2.current);
+          svg3.selectAll("*").remove();
+          
+          histogram = new Histogram(svg3);
+          histogram.initialize();
+          histogram.update(csvData, "variety");
 
-        container
-          .selectAll("circle")
-          .data(csv)
-          .join(
-            (enter) => enter.append("circle"),
-            (update) => update.attr("class", "updated"),
-            (exit) => exit.transition().duration(500).attr("opacity", 0).remove()
-          )
-          .transition()
-          .attr("r", 3)
-          .attr("cx", d => xScale(d[xVar]))
-          .attr("cy", d => yScale(d[yVar]))
-          .attr("fill", d => zScale(d.variety))
+          dataTable = new DataTable("#data-table");
+          updateHistogram();
+          updateDataTable();
         })
-  }, [count]);
+
+        const svg2 = d3.select(svgRef2.current);
+        histogram = new Histogram(svg2);
+        histogram.initialize();
+        histogram.update(csvData, "variety");
+
+        dataTable = new DataTable("#data-table");
+        updateDataTable();
+    })
+  }, [count, chosenXVar, chosenYVar, colorUse]);
 
   useEffect(() => {
     const svg = d3.select(svgRef.current);
@@ -85,6 +92,7 @@ export default function Test({count, chosenXVar, chosenYVar, colorUse}) {
   return (
     <>        
       <svg ref={svgRef}></svg>
+      <svg ref={svgRef2}></svg>
     </>
   );
 }
