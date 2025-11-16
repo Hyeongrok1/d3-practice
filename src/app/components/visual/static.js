@@ -1,10 +1,11 @@
 export async function get_data() {
     try {
-        const response = await fetch('./data.json');
+        const response = await fetch('https://raw.githubusercontent.com/Hyeongrok1/d3-practice/refs/heads/main/public/data.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const jsonObject = await response.json();
+        console.log(jsonObject);
         return jsonObject;
     } catch (error) {
         console.error('Error fetching data:', error);

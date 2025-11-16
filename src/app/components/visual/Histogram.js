@@ -67,5 +67,26 @@ export default class Histogram {
         this.yAxis
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
             .call(d3.axisLeft(this.yScale));
+
+        this.legend
+            .append("text")
+            .text("detection: " + allScores["detection"])
+            .style("font-size", "15px")
+            .attr("x", this.margin.left + 24)
+            .attr("y", this.margin.top + 10)
+
+        this.legend
+            .append("text")
+            .text("embedding: " + allScores["embedding"])
+            .style("font-size", "15px")
+            .attr("x", this.margin.left + 24)
+            .attr("y", this.margin.top + 34)
+
+        this.legend
+            .append("text")
+            .text("fuzz: " + allScores["fuzz"])
+            .style("font-size", "15px")
+            .attr("x", this.margin.left + 24)
+            .attr("y", this.margin.top + 58)
     }
 }

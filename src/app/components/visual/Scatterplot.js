@@ -12,7 +12,7 @@ export default class Scatterplot {
         left: 40
     }
 
-    constructor(svg, data, width = 800, height = 500) {
+    constructor(svg, data, width = 1100, height = 500) {
         this.svg = svg;
         this.data = data;
         this.width = width;
@@ -89,10 +89,10 @@ export default class Scatterplot {
                     .attr("stroke-width", 5);
                 this.feature_id = circle.data()[0].feature_id;
                 this.cosine_sim = circle.data()[0].cosine_average;
-                const feature_x = d3.select("#feature_x");
-                const cosine_y = d3.select("#cosine_y");
-                feature_x.text("       X: feature_id = " + this.feature_id);
-                cosine_y.text("Y: cosine_similarity = " + this.cosine_sim)
+                const feature_x = d3.select("#feature_id");
+                const cosine_y = d3.select("#cosine_similarity");
+                feature_x.text("feature_id = " + this.feature_id);
+                cosine_y.text(" average cosine_similarity = " + this.cosine_sim)
                 let data = get_explains(this.feature_id).then(
                     result => {
                         if (result.length > 0) {
@@ -105,7 +105,7 @@ export default class Scatterplot {
                             const x_text = d3.select("#x_text");
                             x_text.text(data1.Text)
                             const x_llm = d3.select("#x_llm");
-                            x_llm.text(data1.llm_explainer)
+                            x_llm.text("<" + data1.llm_explainer + ">")
                         } else {
                             const svg2 = d3.select("#histogram1");
                             svg2.selectAll("*").remove();
@@ -114,7 +114,10 @@ export default class Scatterplot {
                             const x_text = d3.select("#x_text");
                             x_text.text("")
                         }
-
+                        window.scroll({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
                         if (result.length > 1) {
                             let data2 = result[1];
                             const svg3 = d3.select("#histogram2");
@@ -125,7 +128,7 @@ export default class Scatterplot {
                             const y_text = d3.select("#y_text");
                             const y_llm = d3.select("#y_llm");
                             y_text.text(data2.Text)
-                            y_llm.text(data2.llm_explainer)
+                            y_llm.text("<" + data2.llm_explainer + ">")
 
                         } else {
                             const svg3 = d3.select("#histogram2");
@@ -146,7 +149,7 @@ export default class Scatterplot {
                             const z_text = d3.select("#z_text");
                             const z_llm = d3.select("#z_llm");
                             z_text.text(data3.Text)
-                            z_llm.text(data3.llm_explainer)
+                            z_llm.text("<" + data3.llm_explainer + ">")
                         } else {
                             const svg4 = d3.select("#histogram3");
                             svg4.selectAll("*").remove();
